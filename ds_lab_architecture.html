@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS LAB 企業網路與資安實戰架構圖</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+
+    /* Accent semantic helpers using color-mix so both Light and Dark themes have crisp contrast */
+    .tone-blue {
+      background: color-mix(in srgb, #2563eb 10%, var(--card));
+      border-color: color-mix(in srgb, #2563eb 32%, var(--border));
+    }
+    .tone-blue-badge {
+      background: color-mix(in srgb, #2563eb 16%, var(--card));
+      color: color-mix(in srgb, #2563eb 78%, var(--foreground));
+    }
+
+    .tone-indigo {
+      background: color-mix(in srgb, #6366f1 11%, var(--card));
+      border-color: color-mix(in srgb, #6366f1 36%, var(--border));
+    }
+    .tone-indigo-badge {
+      background: color-mix(in srgb, #6366f1 18%, var(--card));
+      color: color-mix(in srgb, #6366f1 80%, var(--foreground));
+    }
+
+    .tone-emerald {
+      background: color-mix(in srgb, #10b981 10%, var(--card));
+      border-color: color-mix(in srgb, #10b981 34%, var(--border));
+    }
+    .tone-emerald-badge {
+      background: color-mix(in srgb, #10b981 18%, var(--card));
+      color: color-mix(in srgb, #059669 80%, var(--foreground));
+    }
+
+    .tone-amber {
+      background: color-mix(in srgb, #f59e0b 11%, var(--card));
+      border-color: color-mix(in srgb, #f59e0b 36%, var(--border));
+    }
+    .tone-amber-badge {
+      background: color-mix(in srgb, #f59e0b 18%, var(--card));
+      color: color-mix(in srgb, #d97706 82%, var(--foreground));
+    }
+
+    .tone-rose {
+      background: color-mix(in srgb, #f43f5e 10%, var(--card));
+      border-color: color-mix(in srgb, #f43f5e 35%, var(--border));
+    }
+    .tone-rose-badge {
+      background: color-mix(in srgb, #f43f5e 17%, var(--card));
+      color: color-mix(in srgb, #e11d48 80%, var(--foreground));
+    }
+
+    .tone-cyan {
+      background: color-mix(in srgb, #06b6d4 10%, var(--card));
+      border-color: color-mix(in srgb, #06b6d4 34%, var(--border));
+    }
+    .tone-cyan-badge {
+      background: color-mix(in srgb, #06b6d4 18%, var(--card));
+      color: color-mix(in srgb, #0891b2 82%, var(--foreground));
+    }
+
+    .vsphere-shell {
+      background: color-mix(in srgb, var(--foreground) 3%, var(--card));
+      border: 2px solid color-mix(in srgb, #3b82f6 38%, var(--border));
+    }
+
+    /* Interactive node transitions & Scenario Highlighting */
+    .arch-node {
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.22s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+    .arch-node:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    body.scenario-active .arch-node {
+      opacity: 0.28;
+      filter: grayscale(35%);
+    }
+    body.scenario-active .arch-node.is-highlighted {
+      opacity: 1;
+      filter: none;
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35), 0 10px 24px rgba(37, 99, 235, 0.16);
+      transform: translateY(-2px);
+    }
+
+    /* View mode visibility */
+    body[data-mode="plain"] .tech-only { display: none !important; }
+    body[data-mode="tech"] .plain-only { display: none !important; }
+
+    /* Flow connector animation */
+    @keyframes pulseDown {
+      0%, 100% { transform: translateY(0); opacity: 0.75; }
+      50% { transform: translateY(3px); opacity: 1; }
+    }
+    .flow-arrow {
+      animation: pulseDown 2.2s infinite ease-in-out;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { padding: 0 !important; }
+    }
+  </style>
+</head>
+<body data-mode="both" class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6">
+
+  <div class="max-w-7xl mx-auto space-y-5">
+
+    <!-- Top Header Card -->
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 md:p-6 shadow-sm">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tone-blue-badge mb-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            Enterprise Network &amp; Zero-Trust Security Lab
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)]">
+            DS LAB 企業網路與資安實戰架構圖
+          </h1>
+          <p class="text-sm text-[var(--muted-foreground)] mt-1.5 leading-relaxed">
+            以「<strong class="text-[var(--foreground)]">現代智慧企業大樓</strong>」為設計比喻：從大門警衛、零信任門禁、網站安檢、智慧分流，到內部機房、資安靶場與 AI 微服務的一站式教學實驗室。
+          </p>
+        </div>
+
+        <!-- Utility Buttons -->
+        <div class="flex flex-wrap items-center gap-2 no-print">
+          <button onclick="toggleUrlEditor()" class="px-3.5 py-2 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-80 transition flex items-center gap-1.5">
+            <span>⚙️</span> 編輯服務網址
+          </button>
+          <button onclick="exportStandaloneHtml()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
+            <span>⬇️</span> 下載獨立版 HTML
+          </button>
+        </div>
+      </div>
+
+      <!-- Audience Mode + Interactive Learning Scenarios Bar -->
+      <div class="mt-5 pt-4 border-t border-[var(--border)] flex flex-col xl:flex-row xl:items-center justify-between gap-4 no-print">
+        <!-- Mode Switcher -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-semibold text-[var(--muted-foreground)] mr-1">👀 閱讀視角：</span>
+          <button id="mode-both" onclick="setViewMode('both')" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-sm transition">
+            🌟 教學全覽（專業＋白話）
+          </button>
+          <button id="mode-plain" onclick="setViewMode('plain')" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] transition">
+            💬 非技術人員（純白話比喻）
+          </button>
+          <button id="mode-tech" onclick="setViewMode('tech')" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] transition">
+            🔧 工程師視角（IP / Port 快啟）
+          </button>
+        </div>
+
+        <!-- Scenario Flow Selector -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="text-xs font-semibold text-[var(--muted-foreground)] mr-1">🧭 點擊體驗流量路線：</span>
+          <button onclick="setScenario('all')" data-scen="all" class="scen-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white transition">
+            全部顯示
+          </button>
+          <button onclick="setScenario('web_lb')" data-scen="web_lb" class="scen-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-85 transition">
+            1. 訪客看網站（防駭＋分流）
+          </button>
+          <button onclick="setScenario('ztna')" data-scen="ztna" class="scen-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-85 transition">
+            2. 零信任連內網（ZTAG）
+          </button>
+          <button onclick="setScenario('vpn')" data-scen="vpn" class="scen-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-85 transition">
+            3. 員工遠端 VPN（AG）
+          </button>
+          <button onclick="setScenario('soc')" data-scen="soc" class="scen-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-85 transition">
+            4. 駭客攻防演練（靶機＋監控）
+          </button>
+          <button onclick="setScenario('ai_ops')" data-scen="ai_ops" class="scen-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-85 transition">
+            5. 容器維運與私有 AI
+          </button>
+        </div>
+      </div>
+
+      <!-- Dynamic Scenario Story Banner (Hidden when 'all') -->
+      <div id="scenarioBanner" class="hidden mt-4 rounded-xl p-4 border tone-blue">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
+          <div class="font-bold text-sm text-[var(--foreground)] flex items-center gap-2" id="scenTitle"></div>
+          <button onclick="setScenario('all')" class="self-start md:self-auto text-xs font-semibold px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">
+            ✕ 結束路線導覽
+          </button>
+        </div>
+        <p class="text-xs md:text-sm text-[var(--muted-foreground)] mb-3" id="scenSummary"></p>
+        <div id="scenSteps" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5"></div>
+      </div>
+    </header>
+
+    <!-- Batch URL Editor Panel (Collapsible) -->
+    <section id="urlEditorPanel" class="hidden bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm no-print">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-base font-bold text-[var(--foreground)]">⚙️ 設定各服務快速連線網址</h2>
+        <button onclick="toggleUrlEditor()" class="text-xs px-2.5 py-1 rounded border border-[var(--border)] text-[var(--muted-foreground)]">關閉</button>
+      </div>
+      <p class="text-xs text-[var(--muted-foreground)] mb-4">
+        輸入完整網址（例如 <code class="px-1.5 py-0.5 rounded bg-[var(--background)]">http://192.168.4.63:8081</code>），儲存後保存在瀏覽器本機，亦可透過「下載獨立版 HTML」將設定一併打包帶走。
+      </p>
+      <div id="urlFieldsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      <div class="mt-4 pt-3 border-t border-[var(--border)] flex flex-wrap gap-2">
+        <button onclick="saveAllUrls()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700">儲存所有網址</button>
+        <button onclick="resetAllUrls()" class="px-4 py-2 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]">恢復預設值</button>
+      </div>
+    </section>
+
+    <!--Selected Component Quick Inspector Bar -->
+    <section id="nodeInspector" class="hidden bg-[var(--card)] border-2 border-blue-500/60 rounded-2xl p-4 md:p-5 shadow-md">
+      <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+        <div class="space-y-1.5 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="inspLayer" class="text-xs font-bold px-2.5 py-0.5 rounded-full tone-blue-badge"></span>
+            <h3 id="inspName" class="text-lg font-bold text-[var(--foreground)]"></h3>
+            <code id="inspAddr" class="text-xs font-mono px-2 py-0.5 rounded bg-[var(--background)] border border-[var(--border)]"></code>
+          </div>
+          <p id="inspPlain" class="text-sm text-[var(--foreground)] font-medium"></p>
+          <p id="inspLearn" class="text-xs text-[var(--muted-foreground)] leading-relaxed"></p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 shrink-0 no-print">
+          <button id="inspOpenBtn" onclick="openSelectedService()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 transition">
+            🔗 開啟服務網頁
+          </button>
+          <button onclick="closeInspector()" class="px-3 py-2 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)]">
+            關閉
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ARCHITECTURE DIAGRAM CANVAS (4 CLEAR LAYERS)
+    ========================================================== -->
+    <main class="space-y-3">
+
+      <!-- LAYER 1: EXTERNAL USERS & PERIMETER NETWORK -->
+      <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 md:p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-md text-xs font-bold tone-blue-badge">第 1 層</span>
+            <h2 class="text-sm md:text-base font-bold text-[var(--foreground)]">外部連線與邊界網路層（大樓入口與警衛室）</h2>
+          </div>
+          <span class="text-xs text-[var(--muted-foreground)] hidden sm:inline">點擊任一元件卡片可查看教學解說與開啟服務</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-11 gap-3 items-center">
+          <!-- External Users -->
+          <div onclick="inspectNode('users')" data-node="users" class="arch-node md:col-span-3 rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">🌍</span>
+              <div>
+                <div class="font-bold text-sm text-[var(--foreground)]">外部使用者 / 遠端員工</div>
+                <div class="text-xs text-[var(--muted-foreground)] tech-only">Internet / Remote Clients</div>
+              </div>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)] mt-2 plain-only">
+              包含一般網站訪客、居家辦公員工、外部合作夥伴與系統維運管理員。
+            </p>
+          </div>
+
+          <!-- Arrow -->
+          <div class="md:col-span-1 flex justify-center text-[var(--muted-foreground)] font-bold text-sm">
+            <span class="hidden md:inline">━━▶</span>
+            <span class="md:hidden">▼</span>
+          </div>
+
+          <!-- Sophos Firewall -->
+          <div onclick="inspectNode('sophos')" data-node="sophos" class="arch-node md:col-span-3 rounded-xl border p-3.5 tone-blue">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🛡️</span>
+                <div>
+                  <div class="font-bold text-sm text-[var(--foreground)]">Sophos Firewall</div>
+                  <div class="text-xs text-[var(--muted-foreground)] tech-only">Perimeter NGFW 邊界防火牆</div>
+                </div>
+              </div>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full tone-blue-badge">第一道防線</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)] mt-2 plain-only">
+              🏢 <strong>比喻：大樓一樓警衛室</strong>。守在網路最外圍，擋掉已知惡意攻擊與未授權連線。
+            </p>
+          </div>
+
+          <!-- Arrow -->
+          <div class="md:col-span-1 flex justify-center text-[var(--muted-foreground)] font-bold text-sm">
+            <span class="hidden md:inline">━━▶</span>
+            <span class="md:hidden">▼</span>
+          </div>
+
+          <!-- Physical Switch -->
+          <div onclick="inspectNode('switch')" data-node="switch" class="arch-node md:col-span-3 rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🔀</span>
+                <div>
+                  <div class="font-bold text-sm text-[var(--foreground)]">L2 / L3 實體交換器</div>
+                  <div class="text-xs text-[var(--muted-foreground)] tech-only">Physical Core Switch</div>
+                </div>
+              </div>
+              <span class="text-xs font-mono px-2 py-0.5 rounded border border-[var(--border)] tech-only">VLAN / Routing</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)] mt-2 plain-only">
+              🛣️ <strong>比喻：大樓電梯與走廊主幹線</strong>。負責實體網路線高速交換，把流量送進虛擬化機房。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- FLOW CONNECTOR DOWN INTO VSPHERE -->
+      <div class="flex items-center justify-center gap-2 py-0.5 text-xs font-semibold text-[var(--muted-foreground)]">
+        <span class="flow-arrow text-base">⬇</span>
+        <span>流量進入虛擬化資料中心（一台實體高階主機切分出多台獨立虛擬設備）</span>
+        <span class="flow-arrow text-base">⬇</span>
+      </div>
+
+      <!-- VMWARE VSPHERE OUTER ENCLOSURE (CONTAINS LAYER 2 & LAYER 3) -->
+      <section class="vsphere-shell rounded-2xl p-4 md:p-6 shadow-sm space-y-5">
+
+        <!-- vSphere Platform Banner -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[var(--border)]">
+          <div class="flex items-center gap-2.5">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 shadow"></span>
+            <h2 class="text-base md:text-lg font-bold text-[var(--foreground)]">
+              VMware vSphere 虛擬化平台 <span class="text-xs font-normal text-[var(--muted-foreground)] tech-only">(Hypervisor Host)</span>
+            </h2>
+          </div>
+          <div class="text-xs text-[var(--muted-foreground)] plain-only">
+            🏗️ <strong>白話理解：智慧商辦大樓地基</strong> — 下方所有資安閘道與伺服器，都以虛擬機 (VM) 形式安全運行在此平台上
+          </div>
+        </div>
+
+        <!-- LAYER 2: ARRAY NETWORKS SECURITY & DELIVERY GATEWAYS -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 md:p-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3.5">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-xs font-bold tone-indigo-badge">第 2 層</span>
+              <h3 class="text-sm md:text-base font-bold text-[var(--foreground)]">
+                Array Networks 核心安全閘道與流量調度群（門禁、安檢與智慧分流）
+              </h3>
+            </div>
+            <span class="text-xs font-medium text-[var(--muted-foreground)]">所有外部連線須先通過此層驗證或清洗，才能接觸後端伺服器</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <!-- AG -->
+            <div onclick="inspectNode('ag')" data-node="ag" class="arch-node rounded-xl border p-4 tone-indigo flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-xl font-extrabold text-[var(--foreground)]">AG</span>
+                  <span class="text-xs font-semibold px-2 py-0.5 rounded-full tone-indigo-badge">SSL VPN</span>
+                </div>
+                <div class="text-xs font-semibold text-[var(--muted-foreground)] tech-only mb-1.5">Access Gateway 遠端存取閘道</div>
+                <p class="text-xs text-[var(--foreground)] leading-relaxed plain-only">
+                  🚇 <strong>員工專屬加密隧道</strong><br>
+                  <span class="text-[var(--muted-foreground)]">出差或在家辦公時，建立加密通道安全連回公司內網資源。</span>
+                </p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+                <span>遠端連線入口</span>
+                <span class="font-semibold text-blue-500">詳情 ↗</span>
+              </div>
+            </div>
+
+            <!-- ZTAG -->
+            <div onclick="inspectNode('ztag')" data-node="ztag" class="arch-node rounded-xl border p-4 tone-indigo flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-xl font-extrabold text-[var(--foreground)]">ZTAG</span>
+                  <span class="text-xs font-semibold px-2 py-0.5 rounded-full tone-indigo-badge">零信任 ZTNA</span>
+                </div>
+                <div class="text-xs font-semibold text-[var(--muted-foreground)] tech-only mb-1.5">Zero Trust Access Gateway</div>
+                <p class="text-xs text-[var(--foreground)] leading-relaxed plain-only">
+                  🪪 <strong>零信任智慧門禁卡</strong><br>
+                  <span class="text-[var(--muted-foreground)]">「永不預設信任！」驗證身分後只開單一房間的門，不給整棟大樓鑰匙。</span>
+                </p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+                <span>最小權限控制</span>
+                <span class="font-semibold text-blue-500">詳情 ↗</span>
+              </div>
+            </div>
+
+            <!-- ASF -->
+            <div onclick="inspectNode('asf')" data-node="asf" class="arch-node rounded-xl border p-4 tone-rose flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-xl font-extrabold text-[var(--foreground)]">ASF</span>
+                  <span class="text-xs font-semibold px-2 py-0.5 rounded-full tone-rose-badge">網站防駭 WAF</span>
+                </div>
+                <div class="text-xs font-semibold text-[var(--muted-foreground)] tech-only mb-1.5">Array Server Firewall / WAF</div>
+                <p class="text-xs text-[var(--foreground)] leading-relaxed plain-only">
+                  🔍 <strong>網站門口的 X 光安檢機</strong><br>
+                  <span class="text-[var(--muted-foreground)]">專門檢查瀏覽網站的封包，精準攔截駭客竊取資料庫或植入惡意程式。</span>
+                </p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+                <span>應用層防禦</span>
+                <span class="font-semibold text-blue-500">詳情 ↗</span>
+              </div>
+            </div>
+
+            <!-- APV -->
+            <div onclick="inspectNode('apv')" data-node="apv" class="arch-node rounded-xl border p-4 tone-emerald flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-xl font-extrabold text-[var(--foreground)]">APV</span>
+                  <span class="text-xs font-semibold px-2 py-0.5 rounded-full tone-emerald-badge">負載平衡 LB</span>
+                </div>
+                <div class="text-xs font-semibold text-[var(--muted-foreground)] tech-only mb-1.5">Application Delivery Controller</div>
+                <p class="text-xs text-[var(--foreground)] leading-relaxed plain-only">
+                  ⚖️ <strong>銀行智慧叫號分流櫃檯</strong><br>
+                  <span class="text-[var(--muted-foreground)]">把大量網站訪客平均分配給後端多台主機，其中一台當機也能無縫接手不斷線。</span>
+                </p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+                <span>高可用性調度</span>
+                <span class="font-semibold text-blue-500">詳情 ↗</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FLOW CONNECTOR BETWEEN GATEWAYS AND SERVERS -->
+        <div class="flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-[var(--muted-foreground)]">
+          <span>⬇ 依身分權限與服務類型，安全派送至後端四大功能分區 ⬇</span>
+        </div>
+
+        <!-- LAYER 3: BACKEND SERVERS & DOCKER MICROSERVICES (4 THEMED ZONES) -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-md text-xs font-bold tone-emerald-badge">第 3 層</span>
+            <h3 class="text-sm md:text-base font-bold text-[var(--foreground)]">
+              後端伺服器與容器服務層（四大實戰功能分區）
+            </h3>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+            <!-- Left 7 Columns: Zones A, B, C -->
+            <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <!-- ZONE A: Core Enterprise Infra -->
+              <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <h4 class="font-bold text-sm text-[var(--foreground)]">🏢 A. 企業核心基礎架構</h4>
+                    <span class="text-xs px-2 py-0.5 rounded tone-blue-badge">內網機房</span>
+                  </div>
+                  <p class="text-xs text-[var(--muted-foreground)] mb-3 plain-only">
+                    公司日常運作必備的帳號認證、遠端電腦、檔案儲存與內部網站。
+                  </p>
+
+                  <div class="space-y-2">
+                    <div onclick="inspectNode('ad')" data-node="ad" class="arch-node rounded-lg border border-[var(--border)] bg-[var(--background)] p-2.5 flex items-center justify-between gap-2">
+                      <div>
+                        <div class="font-semibold text-sm text-[var(--foreground)]">🔑 AD 網域主機</div>
+                        <div class="text-xs text-[var(--muted-foreground)] plain-only">員工帳號密碼與門禁發卡中心</div>
+                      </div>
+                      <span class="text-xs font-mono font-bold px-2 py-0.5 rounded tone-blue-badge tech-only">.81</span>
+                    </div>
+
+                    <div onclick="inspectNode('rdp')" data-node="rdp" class="arch-node rounded-lg border border-[var(--border)] bg-[var(--background)] p-2.5 flex items-center justify-between gap-2">
+                      <div>
+                        <div class="font-semibold text-sm text-[var(--foreground)]">🖥️ RDP 遠端桌面</div>
+                        <div class="text-xs text-[var(--muted-foreground)] plain-only">讓授權人員遠端操作內部電腦</div>
+                      </div>
+                      <span class="text-xs font-mono font-bold px-2 py-0.5 rounded tone-blue-badge tech-only">.81</span>
+                    </div>
+
+                    <div onclick="inspectNode('stornext')" data-node="stornext" class="arch-node rounded-lg border border-[var(--border)] bg-[var(--background)] p-2.5 flex items-center justify-between gap-2">
+                      <div>
+                        <div class="font-semibold text-sm text-[var(--foreground)]">💾 StorNext 儲存系統</div>
+                        <div class="text-xs text-[var(--muted-foreground)] plain-only">企業高速共享數位檔案庫</div>
+                      </div>
+                      <span class="text-xs font-mono font-bold px-2 py-0.5 rounded tone-blue-badge tech-only">.79</span>
+                    </div>
+
+                    <div onclick="inspectNode('web')" data-node="web" class="arch-node rounded-lg border border-[var(--border)] bg-[var(--background)] p-2.5 flex items-center justify-between gap-2">
+                      <div>
+                        <div class="font-semibold text-sm text-[var(--foreground)]">🌐 Web 網站主機</div>
+                        <div class="text-xs text-[var(--muted-foreground)] plain-only">企業標準展示與應用網站</div>
+                      </div>
+                      <span class="text-xs font-mono font-bold px-2 py-0.5 rounded tone-blue-badge tech-only">3.112</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right stack inside Left 7 cols: Zone B (LB Pool) + Zone C (Cybersecurity SOC) -->
+              <div class="space-y-4 flex flex-col justify-between">
+
+                <!-- ZONE B: Load Balancing Demo Pool -->
+                <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
+                  <div class="flex items-center justify-between mb-1">
+                    <h4 class="font-bold text-sm text-[var(--foreground)]">⚖️ B. 負載平衡實戰群</h4>
+                    <span class="text-xs px-2 py-0.5 rounded tone-emerald-badge">搭配 APV</span>
+                  </div>
+                  <p class="text-xs text-[var(--muted-foreground)] mb-3 plain-only">
+                    同時開多個網站分身，實測 APV 自動分流訪客與單機故障不中斷。
+                  </p>
+
+                  <div class="rounded-lg border tone-emerald p-2.5 space-y-2">
+                    <div onclick="inspectNode('iis')" data-node="iis" class="arch-node rounded-md bg-[var(--card)] border border-[var(--border)] p-2 flex items-center justify-between">
+                      <span class="font-bold text-sm text-[var(--foreground)]">🪟 Web2 - IIS 主機</span>
+                      <span class="text-xs font-mono font-bold px-2 py-0.5 rounded tone-emerald-badge tech-only">192.168.4.84</span>
+                    </div>
+
+                    <div class="pl-2 space-y-1.5">
+                      <div onclick="inspectNode('apv_demo1')" data-node="apv_demo1" class="arch-node rounded-md bg-[var(--card)] border border-[var(--border)] px-2.5 py-1.5 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-[var(--foreground)]">↳ APV-demo-web1（站台 1）</span>
+                        <code class="text-xs font-mono font-bold text-emerald-600 tech-only">:8081</code>
+                      </div>
+                      <div onclick="inspectNode('apv_demo2')" data-node="apv_demo2" class="arch-node rounded-md bg-[var(--card)] border border-[var(--border)] px-2.5 py-1.5 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-[var(--foreground)]">↳ APV-demo-web2（站台 2）</span>
+                        <code class="text-xs font-mono font-bold text-emerald-600 tech-only">:8082</code>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ZONE C: Cybersecurity Attack/Defense & SOC -->
+                <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
+                  <div class="flex items-center justify-between mb-1">
+                    <h4 class="font-bold text-sm text-[var(--foreground)]">🚨 C. 資安攻防與監控中心</h4>
+                    <span class="text-xs px-2 py-0.5 rounded tone-amber-badge">紅藍隊教學</span>
+                  </div>
+                  <p class="text-xs text-[var(--muted-foreground)] mb-3 plain-only">
+                    提供合法「練習用漏洞靶機」與「中央警報系統」，親眼見證攻擊如何被攔截與記錄。
+                  </p>
+
+                  <div class="space-y-2">
+                    <div onclick="inspectNode('dvwa')" data-node="dvwa" class="arch-node rounded-lg border tone-rose p-2.5 flex items-center justify-between gap-2">
+                      <div>
+                        <div class="font-semibold text-sm text-[var(--foreground)]">🎯 DVWA / XAMPP 弱點靶機</div>
+                        <div class="text-xs text-[var(--muted-foreground)] plain-only">故意留漏洞的練習網站，測試 ASF 防駭效果</div>
+                      </div>
+                      <span class="text-xs font-mono font-bold px-2 py-0.5 rounded tone-rose-badge tech-only">.76</span>
+                    </div>
+
+                    <div onclick="inspectNode('wazuh')" data-node="wazuh" class="arch-node rounded-lg border tone-amber p-2.5 flex items-center justify-between gap-2">
+                      <div>
+                        <div class="font-semibold text-sm text-[var(--foreground)]">👁️ Web1 - Wazuh 資安監控</div>
+                        <div class="text-xs text-[var(--muted-foreground)] plain-only">大樓中央監視器 (SIEM)，即時告警異常入侵</div>
+                      </div>
+                      <span class="text-xs font-mono font-bold px-2 py-0.5 rounded tone-amber-badge tech-only">192.168.4.83</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Right 5 Columns: ZONE D: Docker Container Host (192.168.4.63) -->
+            <div class="lg:col-span-5 bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 flex flex-col justify-between">
+              <div>
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                  <h4 class="font-bold text-sm text-[var(--foreground)]">🐳 D. 現代容器微服務主機</h4>
+                  <code class="text-xs font-mono font-bold px-2.5 py-0.5 rounded tone-cyan-badge">192.168.4.63</code>
+                </div>
+                <p class="text-xs text-[var(--muted-foreground)] mb-3 plain-only">
+                  📦 <strong>比喻：輕量化貨櫃屋市集</strong>。在一台主機內透過 Docker 獨立運行 8 種現代化認證、維運、監控與私有 AI 服務。
+                </p>
+
+                <div class="space-y-2.5">
+                  <!-- Subcategory 1: LB Web Nodes -->
+                  <div class="text-xs font-bold text-[var(--muted-foreground)]">⚖️ 負載平衡容器節點（與 IIS .84 協同演練）</div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div onclick="inspectNode('apv_node1')" data-node="apv_node1" class="arch-node rounded-lg border tone-emerald p-2.5 flex items-center justify-between">
+                      <div>
+                        <div class="font-semibold text-xs text-[var(--foreground)]">APV-web-node1</div>
+                        <div class="text-xs text-[var(--muted-foreground)] plain-only">容器網站節點 1</div>
+                      </div>
+                      <code class="text-xs font-mono font-bold px-1.5 py-0.5 rounded tone-emerald-badge tech-only">:8081</code>
+                    </div>
+                    <div onclick="inspectNode('apv_node2')" data-node="apv_node2" class="arch-node rounded-lg border tone-emerald p-2.5 flex items-center justify-between">
+                      <div>
+                        <div class="font-semibold text-xs text-[var(--foreground)]">APV-web-node2</div>
+                        <div class="text-xs text-[var(--muted-foreground)] plain-only">容器網站節點 2</div>
+                      </div>
+                      <code class="text-xs font-mono font-bold px-1.5 py-0.5 rounded tone-emerald-badge tech-only">:8082</code>
+                    </div>
+                  </div>
+
+                  <!-- Subcategory 2: Identity & Remote Access -->
+                  <div class="text-xs font-bold text-[var(--muted-foreground)] pt-1">🪪 身分認證與免安裝遠端維運</div>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div onclick="inspectNode('authentik')" data-node="authentik" class="arch-node rounded-lg border border-[var(--border)] bg-[var(--background)] p-2.5">
+                      <div class="flex items-center justify-between">
+                        <span class="font-semibold text-xs text-[var(--foreground)]">Authentik</span>
+                        <code class="text-xs font-mono px-1.5 rounded tone-cyan-badge tech-only">:9000</code>
+                      </div>
+                      <div class="text-xs text-[var(--muted-foreground)] mt-1 plain-only">SSO 單一登入中心</div>
+                    </div>
+                    <div onclick="inspectNode('guacamole')" data-node="guacamole" class="arch-node rounded-lg border border-[var(--border)] bg-[var(--background)] p-2.5">
+                      <div class="flex items-center justify-between">
+                        <span class="font-semibold text-xs text-[var(--foreground)]">Guacamole</span>
+                        <code class="text-xs font-mono px-1.5 rounded tone-cyan-badge tech-only">:8080</code>
+                      </div>
+                      <div class="text-xs text-[var(--muted-foreground)] mt-1 plain-only">網頁版遠端連線堡壘</div>
+                    </div>
+                    <div onclick="inspectNode('meshcentral')" data-node="meshcentral" class="arch-node rounded-lg border border-[var(--border)] bg-[var(--background)] p-2.5">
+                      <div class="flex items-center justify-between">
+                        <span class="font-semibold text-xs text-[var(--foreground)]">MeshCentral</span>
+                        <code class="text-xs font-mono px-1.5 rounded tone-cyan-badge tech-only">:8085</code>
+                      </div>
+                      <div class="text-xs text-[var(--muted-foreground)] mt-1 plain-only">跨平台設備遠端管理</div>
+                    </div>
+                  </div>
+
+                  <!-- Subcategory 3: Ops, Monitoring & Private AI -->
+                  <div class="text-xs font-bold text-[var(--muted-foreground)] pt-1">🤖 容器管理、系統監控與企業 AI</div>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div onclick="inspectNode('portainer')" data-node="portainer" class="arch-node rounded-lg border border-[var(--border)] bg-[var(--background)] p-2.5">
+                      <div class="flex items-center justify-between">
+                        <span class="font-semibold text-xs text-[var(--foreground)]">Portainer</span>
+                        <code class="text-xs font-mono px-1.5 rounded tone-cyan-badge tech-only">:9443</code>
+                      </div>
+                      <div class="text-xs text-[var(--muted-foreground)] mt-1 plain-only">容器視覺化管理後台</div>
+                    </div>
+                    <div onclick="inspectNode('glances')" data-node="glances" class="arch-node rounded-lg border border-[var(--border)] bg-[var(--background)] p-2.5">
+                      <div class="flex items-center justify-between">
+                        <span class="font-semibold text-xs text-[var(--foreground)]">Glances</span>
+                        <code class="text-xs font-mono px-1.5 rounded tone-cyan-badge tech-only">:61208</code>
+                      </div>
+                      <div class="text-xs text-[var(--muted-foreground)] mt-1 plain-only">CPU/記憶體即時儀表</div>
+                    </div>
+                    <div onclick="inspectNode('anythingllm')" data-node="anythingllm" class="arch-node rounded-lg border tone-indigo p-2.5">
+                      <div class="flex items-center justify-between">
+                        <span class="font-semibold text-xs text-[var(--foreground)]">anythingLLM</span>
+                        <code class="text-xs font-mono px-1.5 rounded tone-indigo-badge tech-only">:3001</code>
+                      </div>
+                      <div class="text-xs text-[var(--muted-foreground)] mt-1 plain-only">企業私有 AI 知識庫</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- BEGINNER FAST-LEARNING GUIDE (3 KEY CONCEPTS) -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm">
+      <h2 class="text-base font-bold text-[var(--foreground)] mb-3">
+        🎓 初學者 1 分鐘快速看懂：這座 LAB 在展示什麼核心觀念？
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+          <div class="font-bold text-sm text-[var(--foreground)] mb-1.5">1️⃣ 縱深防禦（不只一道門）</div>
+          <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+            外層由 <strong>Sophos 防火牆</strong>擋掉大範圍網路攻擊；內層再由 <strong>Array ASF (WAF)</strong> 針對網站內容做深度安檢，搭配 <strong>Wazuh</strong> 全天候監視紀錄，示範企業真實的多層次防禦。
+          </p>
+        </div>
+        <div class="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+          <div class="font-bold text-sm text-[var(--foreground)] mb-1.5">2️⃣ 從傳統 VPN 演進到「零信任 ZTAG」</div>
+          <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+            在這座 LAB 可以同時比較 <strong>AG (傳統 SSL VPN)</strong> 與 <strong>ZTAG (零信任閘道)</strong>：零信任結合 <strong>AD / Authentik</strong> 身分驗證，確保員工只能開啟被授權的單一應用（如 Guacamole 或特定網頁），駭客就算偷到密碼也無法在內網橫向移動。
+          </p>
+        </div>
+        <div class="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4">
+          <div class="font-bold text-sm text-[var(--foreground)] mb-1.5">3️⃣ 高可用負載平衡與現代容器混合架構</div>
+          <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+            透過 <strong>APV 負載平衡器</strong>，同時串接傳統 Windows 虛擬機 (<strong>IIS .84</strong>) 與新世代 Docker 容器節點 (<strong>.63</strong>)，讓學習者親手體驗跨平台流量分配、健康檢查與無縫容錯。
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // Default URLs preserved & compatible with original labTopologyUrls
+    const defaults = {
+      sophos: "",
+      ag: "",
+      ztag: "",
+      asf: "",
+      apv: "",
+      web: "",
+      ad: "",
+      rdp: "",
+      stornext: "",
+      dvwa: "",
+      wazuh: "https://192.168.4.83",
+      iis: "http://192.168.4.84",
+      apv_demo1: "http://192.168.4.84:8081",
+      apv_demo2: "http://192.168.4.84:8082",
+      apv_node1: "http://192.168.4.63:8081",
+      apv_node2: "http://192.168.4.63:8082",
+      glances: "http://192.168.4.63:61208",
+      anythingllm: "http://192.168.4.63:3001",
+      portainer: "https://192.168.4.63:9443",
+      authentik: "http://192.168.4.63:9000",
+      guacamole: "http://192.168.4.63:8080",
+      meshcentral: "http://192.168.4.63:8085"
+    };
+
+    // Rich educational metadata for every component
+    const catalog = {
+      users: {
+        name: "外部使用者 / 遠端員工",
+        layer: "外部存取端",
+        addr: "Internet / WAN",
+        noUrl: true,
+        plain: "🏢 白話比喻：想進入企業大樓辦事的訪客、在家工作的員工，或是潛伏在網路上的駭客。",
+        learn: "學習重點：不同身分的人進來時，應該走不同的安全通道（公開訪客走 WAF+LB、遠端員工走 AG 或 ZTAG 零信任閘道）。"
+      },
+      sophos: {
+        name: "Sophos Firewall 邊界防火牆",
+        layer: "第 1 層：邊界防護",
+        addr: "WAN / LAN Gateway",
+        plain: "🏢 白話比喻：企業大樓一樓大門的「武裝警衛室」，負責第一線過濾可疑訪客與外部網路攻擊。",
+        learn: "學習重點：設定南北向流量規則 (NAT / Port Forwarding / IPS)，將合法外部請求轉交給內部 Array 安全閘道群。"
+      },
+      switch: {
+        name: "L2 / L3 Physical Switch 實體交換器",
+        layer: "第 1 層：實體骨幹網路",
+        addr: "VLAN / L2-L3 Switching",
+        noUrl: true,
+        plain: "🛣️ 白話比喻：大樓裡的「高速電梯與走廊主幹線」，用實體網路線連接防火牆與 VMware 虛擬主機。",
+        learn: "學習重點：理解實體網卡 (NIC)、VLAN 網段隔離，以及實體網路如何橋接進 VMware vSwitch 虛擬交換器。"
+      },
+      ag: {
+        name: "Array AG (Access Gateway)",
+        layer: "第 2 層：Array 安全閘道",
+        addr: "SSL VPN Gateway",
+        plain: "🚇 白話比喻：「員工專屬加密地下道」。在外用筆電或手機時，先建立加密通道才能安全存取公司內部電腦與檔案。",
+        learn: "學習重點：實作企業級 SSL VPN、雙因素認證整合 AD，讓遠端使用者安全連線至內部 RDP 或 StorNext。"
+      },
+      ztag: {
+        name: "Array ZTAG (Zero Trust Access Gateway)",
+        layer: "第 2 層：Array 安全閘道",
+        addr: "Zero Trust Network Access",
+        plain: "🪪 白話比喻：「零信任智慧門禁」。不再發給員工整棟大樓萬用鑰匙，而是驗證身分與設備健康後，只打開『他被授權那一個系統』的門。",
+        learn: "學習重點：體驗現代資安主流 ZTNA 架構——隱藏內網真實 IP、結合 AD / Authentik 驗證、做到應用級別最小權限存取。"
+      },
+      asf: {
+        name: "Array ASF (Server Firewall / WAF)",
+        layer: "第 2 層：Array 安全閘道",
+        addr: "Web Application Firewall",
+        plain: "🔍 白話比喻：網站門口的「X 光行李安檢機」。一般防火牆看他走哪扇門，WAF 則打開包裹檢查裡面有沒有暗藏炸彈（如 SQL 隱碼攻擊）。",
+        learn: "學習重點：可搭配後端 DVWA 弱點靶機實測——比較「未經過 ASF 直接打靶機」與「經過 ASF 自動攔截攻擊」的差異！"
+      },
+      apv: {
+        name: "Array APV (Application Delivery / LB)",
+        layer: "第 2 層：Array 流量調度",
+        addr: "ADC / Load Balancer",
+        plain: "⚖️ 白話比喻：銀行大廳的「智慧叫號機」。當大批客戶湧入網站時，自動把人流平均分給 1 號、2 號櫃檯；若 1 號櫃檯休息，自動全數轉給 2 號，網站永遠不當機。",
+        learn: "學習重點：實測伺服器負載平衡演算法（輪詢、最少連線）、SSL 卸載加速，以及後端 IIS (.84) 與 Docker (.63) 節點容錯切換。"
+      },
+      ad: {
+        name: "Microsoft Active Directory (AD)",
+        layer: "第 3A 區：企業核心基礎設施",
+        addr: "Host .81",
+        plain: "🔑 白話比喻：公司的「人事部名冊與門禁發卡總部」。統一管理所有員工的帳號、密碼與部門群組權限。",
+        learn: "學習重點：作為 AG、ZTAG、RDP 等系統的中央身分驗證來源 (LDAP / Kerberos)。"
+      },
+      rdp: {
+        name: "RDP 遠端桌面伺服器",
+        layer: "第 3A 區：企業核心基礎設施",
+        addr: "Host .81",
+        plain: "🖥️ 白話比喻：放在公司機房裡的「公務電腦」，員工透過安全驗證後可從遠端看到畫面並操作辦公軟體。",
+        learn: "學習重點：絕對不能將 RDP 直接暴露在公網（極易遭勒索軟體爆破），在 LAB 中學習如何透過 AG / ZTAG / Guacamole 安全保護它。"
+      },
+      stornext: {
+        name: "StorNext 高速共享儲存系統",
+        layer: "第 3A 區：企業核心基礎設施",
+        addr: "Host .79",
+        plain: "💾 白話比喻：企業級的「中央高鐵級數位金庫與片庫」，提供大檔案高速讀寫與集中儲存。",
+        learn: "學習重點：展示高價值企業內部資產如何受到內網分層與零信任存取保護。"
+      },
+      web: {
+        name: "Web 內部／展示網站伺服器",
+        layer: "第 3A 區：企業核心基礎設施",
+        addr: "3.112",
+        plain: "🌐 白話比喻：企業標準應用網站，提供資訊展示或內部系統服務。",
+        learn: "學習重點：觀察跨網段 (3.x 與 4.x) 路由交換，以及透過安全閘道發布內部網站。"
+      },
+      iis: {
+        name: "Web2 - Windows IIS 網頁主機",
+        layer: "第 3B 區：負載平衡實戰群",
+        addr: "192.168.4.84",
+        plain: "🪟 白話比喻：微軟 Windows 體系的網站伺服器，上面同時開了兩個展示分站 (:8081 與 :8082) 供分流測試。",
+        learn: "學習重點：點擊開啟預設站台，或搭配 APV 觀察流量如何分配至下方的 8081 / 8082 子站台。"
+      },
+      apv_demo1: {
+        name: "APV-demo-web1 (IIS 子站台 1)",
+        layer: "第 3B 區：負載平衡實戰群",
+        addr: "192.168.4.84:8081",
+        plain: "🏷️ 白話比喻：銀行「1 號服務櫃檯」。與 2 號櫃檯內容相同，用來證明 APV 會自動輪流分配訪客。",
+        learn: "學習重點：重新整理透過 APV 發布的網址，觀察畫面顯示目前是由 web1 還是 web2 回應；試著停用 web1 測試無縫容錯！"
+      },
+      apv_demo2: {
+        name: "APV-demo-web2 (IIS 子站台 2)",
+        layer: "第 3B 區：負載平衡實戰群",
+        addr: "192.168.4.84:8082",
+        plain: "🏷️ 白話比喻：銀行「2 號服務櫃檯」。當 1 號櫃檯忙碌或維護時，自動承接所有訪客流量。",
+        learn: "學習重點：與 APV-demo-web1 (:8081) 共同構成 Windows IIS 負載平衡池。"
+      },
+      dvwa: {
+        name: "DVWA / XAMPP 弱點演練靶機",
+        layer: "第 3C 區：資安攻防演練室",
+        addr: "Host .76",
+        plain: "🎯 白話比喻：資安訓練場裡的「練習用假人標靶」。這是一個故意寫滿安全漏洞的網站，讓學員合法練習駭客手法與防禦。",
+        learn: "學習重點：演練 OWASP Top 10 常見網頁攻擊（SQL Injection、XSS、Command Injection），並驗證前端 ASF WAF 能否即時攔截！"
+      },
+      wazuh: {
+        name: "Web1 - Wazuh 資安監控平台 (SIEM / XDR)",
+        layer: "第 3C 區：資安攻防演練室",
+        addr: "192.168.4.83",
+        plain: "👁️ 白話比喻：整棟企業大樓的「24 小時中央監控戰情室」。所有主機誰登入失敗、誰被攻擊，都會即時彙整到這裡亮紅燈警報。",
+        learn: "學習重點：查看資安事件儀表板、檔案完整性監控、漏洞掃描與攻擊軌跡關聯分析。"
+      },
+      apv_node1: {
+        name: "APV-web-node1 (Docker 網站節點 1)",
+        layer: "第 3D 區：容器微服務 (.63)",
+        addr: "192.168.4.63:8081",
+        plain: "🐳 白話比喻：用超輕量「貨櫃屋」秒速啟動的 1 號網站分身，比傳統虛擬機更省資源、啟動更快。",
+        learn: "學習重點：搭配 APV 展示現代容器化網站的高彈性擴充與負載平衡。"
+      },
+      apv_node2: {
+        name: "APV-web-node2 (Docker 網站節點 2)",
+        layer: "第 3D 區：容器微服務 (.63)",
+        addr: "192.168.4.63:8082",
+        plain: "🐳 白話比喻：用超輕量「貨櫃屋」啟動的 2 號網站分身，與 node1 互為備援。",
+        learn: "學習重點：可在 Portainer 中一鍵停止 node1 容器，立即觀察 APV 將流量 100% 導向 node2。"
+      },
+      authentik: {
+        name: "Authentik 單一登入身分中心 (IdP / SSO)",
+        layer: "第 3D 區：容器微服務 (.63)",
+        addr: "192.168.4.63:9000",
+        plain: "🪪 白話比喻：現代化的「數位通行證中心」（就像用一個 Google 帳號登入各種服務），登入一次即可通行多個授權系統。",
+        learn: "學習重點：學習現代 SAML / OIDC / OAuth2 單一登入協定，並與 ZTAG 零信任架構或內部Web服務整合。"
+      },
+      guacamole: {
+        name: "Apache Guacamole 無用戶端遠端連線閘道",
+        layer: "第 3D 區：容器微服務 (.63)",
+        addr: "192.168.4.63:8080",
+        plain: "🖥️ 白話比喻：「打開瀏覽器就能遠端操作電腦」的神奇窗口！電腦不用安裝任何遠端軟體，有網頁就能安全連進機房主機。",
+        learn: "學習重點：常與 ZTAG 零信任閘道完美搭配，實現免裝 Agent 的瀏覽器堡壘機 (SSH / RDP / VNC)。"
+      },
+      meshcentral: {
+        name: "MeshCentral 遠端設備管理平台",
+        layer: "第 3D 區：容器微服務 (.63)",
+        addr: "192.168.4.63:8085",
+        plain: "🛠️ 白話比喻：IT 人員的「跨區設備總控台」，能集中檢視與遠端協助多台電腦與伺服器。",
+        learn: "學習重點：學習企業自建私有化遠端維運平台，取代外部第三方遠端軟體以降低資安風險。"
+      },
+      portainer: {
+        name: "Portainer 容器視覺化管理平台",
+        layer: "第 3D 區：容器微服務 (.63)",
+        addr: "192.168.4.63:9443 (HTTPS)",
+        plain: "🎛️ 白話比喻：「貨櫃屋市集的管理處螢幕」。不用背複雜的黑色指令畫面，點滑鼠就能開關、監看 .63 主機上的所有容器。",
+        learn: "學習重點：讓初學者一眼看懂 Docker 容器狀態、Port 對應、Log 日誌與映像檔管理。"
+      },
+      glances: {
+        name: "Glances 系統即時資源監控",
+        layer: "第 3D 區：容器微服務 (.63)",
+        addr: "192.168.4.63:61208",
+        plain: "📊 白話比喻：主機的「汽車儀表板與心電圖」，一眼看出目前 CPU、記憶體、硬碟與網路流量有沒有過載。",
+        learn: "學習重點：進行壓力測試或攻防演練時，即時觀察容器主機的效能變化。"
+      },
+      anythingllm: {
+        name: "anythingLLM 企業私有 AI 知識庫",
+        layer: "第 3D 區：容器微服務 (.63)",
+        addr: "192.168.4.63:3001",
+        plain: "🤖 白話比喻：「養在公司內網、不會把機密外洩的專屬 ChatGPT」。可餵給它公司技術手冊，讓員工直接用問答找答案。",
+        learn: "學習重點：體驗企業地端 RAG (檢索增強生成) AI 應用，並結合 ZTAG 保護私有 AI 不被外人隨意存取。"
+      }
+    };
+
+    // 5 Interactive Guided Learning Scenarios
+    const scenarios = {
+      web_lb: {
+        title: "🌐 路線 1：外部民眾瀏覽企業網站（WAF 防駭安檢 ＋ APV 智慧分流）",
+        summary: "這是公開網站最標準的企業級架構：先擋攻擊、再分流量，確保網站「既安全又不會塞車當機」。",
+        nodes: ["users", "sophos", "switch", "asf", "apv", "iis", "apv_demo1", "apv_demo2", "apv_node1", "apv_node2"],
+        steps: [
+          { step: "Step 1. 邊界放行", desc: "外部訪客發出網頁請求，先通過 Sophos 防火牆與實體交換器進入機房。" },
+          { step: "Step 2. ASF 網站安檢", desc: "Array ASF (WAF) 深度檢查網址與表單，若有駭客隱碼攻擊當場攔截。" },
+          { step: "Step 3. APV 智慧叫號", desc: "乾淨的流量交給 Array APV，依負載狀況平均分配給後端多台網站。" },
+          { step: "Step 4. 多節點高可用回應", desc: "由 IIS (.84) 或容器節點 (.63) 的 :8081/:8082 回應網頁，單機維護也不中斷！" }
+        ]
+      },
+      ztna: {
+        title: "🛡️ 路線 2：零信任安全存取（ZTAG 最小權限現代架構）",
+        summary: "傳統網路進門後就能到處逛；「零信任」則是每次驗證身分，只開啟你有權限的那扇門，內網其他主機完全隱身！",
+        nodes: ["users", "sophos", "switch", "ztag", "ad", "authentik", "guacamole", "anythingllm"],
+        steps: [
+          { step: "Step 1. 連線至 ZTAG 門禁", desc: "員工從外部瀏覽器連入 Array ZTAG 零信任入口，內網真實 IP 完全不對外公開。" },
+          { step: "Step 2. 嚴格身分查核", desc: "ZTAG 向後端 AD (.81) 或 Authentik (:9000) 查驗帳號、密碼與多因素憑證。" },
+          { step: "Step 3. 最小權限授權", desc: "系統確認該員工職責，只顯示他被允許使用的應用圖示（例如 Guacamole 或私有 AI）。" },
+          { step: "Step 4. 免裝軟體安全操作", desc: "員工直接透過網頁安全使用指定服務，無法掃描或接觸內網其他敏感伺服器。" }
+        ]
+      },
+      vpn: {
+        title: "🔐 路線 3：員工遠端辦公連線（AG SSL VPN 加密隧道）",
+        summary: "出差或居家辦公員工透過加密 VPN 通道連回公司，安全存取內部專用系統與高速儲存設備。",
+        nodes: ["users", "sophos", "switch", "ag", "ad", "rdp", "stornext", "web"],
+        steps: [
+          { step: "Step 1. 發起加密連線", desc: "遠端員工透過瀏覽器或 VPN Client 連線至 Array AG 安全存取閘道。" },
+          { step: "Step 2. AD 網域認證", desc: "AG 與公司核心 AD 網域主機 (.81) 核對員工帳號與部門群組。" },
+          { step: "Step 3. 建立 SSL 加密隧道", desc: "在公用網路上建立一條防竊聽的專屬加密通道。" },
+          { step: "Step 4. 存取內部核心資源", desc: "安全操作 RDP 遠端桌面 (.81)、讀寫 StorNext 檔案庫 (.79) 或內部 Web (3.112)。" }
+        ]
+      },
+      soc: {
+        title: "⚔️ 路線 4：駭客攻防演練與資安監控（紅隊攻擊 vs 藍隊防禦告警）",
+        summary: "想學資安不能只看理論！這條路線讓學習者親手對「合法漏洞靶機」發動測試，並觀察 WAF 攔截與 SIEM 戰情室警報。",
+        nodes: ["users", "sophos", "asf", "dvwa", "wazuh"],
+        steps: [
+          { step: "Step 1. 模擬駭客發動測試", desc: "學習者扮演紅隊（攻擊方），針對網頁輸入測試用 SQL 隱碼或惡意腳本。" },
+          { step: "Step 2. 對照組：直擊 DVWA 靶機", desc: "若未開啟防護直接打 DVWA (.76)，可觀察漏洞如何被攻破、資料如何外洩。" },
+          { step: "Step 3. 防禦組：開啟 ASF 攔截", desc: "將流量導經 Array ASF (WAF)，親眼驗證同樣的攻擊瞬間被阻擋並回傳阻斷頁面。" },
+          { step: "Step 4. Wazuh 戰情室告警", desc: "打開 Wazuh (.83) 監控中心，檢視完整攻擊時間軸、來源 IP 與威脅等級通報！" }
+        ]
+      },
+      ai_ops: {
+        title: "🐳 路線 5：現代容器維運與企業私有 AI 實戰（192.168.4.63）",
+        summary: "展示企業如何在一台 Linux 容器主機上，高效管理微服務、監控硬體效能，並打造不外洩機密的私有 AI 助理。",
+        nodes: ["ztag", "portainer", "glances", "meshcentral", "anythingllm", "authentik"],
+        steps: [
+          { step: "Step 1. 安全維運入口", desc: "管理員透過 ZTAG 零信任閘道與 Authentik SSO 認證進入管理環境。" },
+          { step: "Step 2. Portainer 視覺化管容器", desc: "開啟 Portainer (:9443)，用圖形介面一鍵啟停或更新 8 個微服務容器。" },
+          { step: "Step 3. Glances & MeshCentral 監控", desc: "透過 Glances (:61208) 即時監看主機效能，並以 MeshCentral (:8085) 集中納管設備。" },
+          { step: "Step 4. anythingLLM 企業知識問答", desc: "在 anythingLLM (:3001) 上傳內部學習手冊，安全體驗地端私有 AI 問答！" }
+        ]
+      }
+    };
+
+    let urls = { ...defaults };
+    let selectedKey = null;
+
+    try {
+      const saved = localStorage.getItem("labTopologyUrls");
+      if (saved) urls = { ...defaults, ...JSON.parse(saved) };
+    } catch (e) {}
+
+    // View mode switching
+    function setViewMode(mode) {
+      document.body.setAttribute("data-mode", mode);
+      ["both", "plain", "tech"].forEach(m => {
+        const btn = document.getElementById("mode-" + m);
+        if (m === mode) {
+          btn.className = "mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-sm transition";
+        } else {
+          btn.className = "mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] transition";
+        }
+      });
+    }
+
+    // Scenario highlighting
+    function setScenario(key) {
+      document.querySelectorAll(".scen-btn").forEach(btn => {
+        if (btn.dataset.scen === key) {
+          btn.className = "scen-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white shadow-sm transition";
+        } else {
+          btn.className = "scen-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-85 transition";
+        }
+      });
+
+      const banner = document.getElementById("scenarioBanner");
+      const allNodes = document.querySelectorAll(".arch-node");
+
+      if (key === "all" || !scenarios[key]) {
+        document.body.classList.remove("scenario-active");
+        allNodes.forEach(n => n.classList.remove("is-highlighted"));
+        banner.classList.add("hidden");
+        return;
+      }
+
+      const s = scenarios[key];
+      document.body.classList.add("scenario-active");
+      allNodes.forEach(n => {
+        if (s.nodes.includes(n.dataset.node)) {
+          n.classList.add("is-highlighted");
+        } else {
+          n.classList.remove("is-highlighted");
+        }
+      });
+
+      document.getElementById("scenTitle").textContent = s.title;
+      document.getElementById("scenSummary").textContent = s.summary;
+      const stepsBox = document.getElementById("scenSteps");
+      stepsBox.innerHTML = s.steps.map(st => `
+        <div class="rounded-lg bg-[var(--card)] border border-[var(--border)] p-3">
+          <div class="text-xs font-bold text-blue-500 mb-1">${st.step}</div>
+          <div class="text-xs text-[var(--foreground)] leading-relaxed">${st.desc}</div>
+        </div>
+      `).join("");
+      banner.classList.remove("hidden");
+    }
+
+    // Inspect a component card
+    function inspectNode(key) {
+      const info = catalog[key];
+      if (!info) return;
+      selectedKey = key;
+
+      document.getElementById("inspLayer").textContent = info.layer;
+      document.getElementById("inspName").textContent = info.name;
+      document.getElementById("inspAddr").textContent = info.addr;
+      document.getElementById("inspPlain").textContent = info.plain;
+      document.getElementById("inspLearn").textContent = "💡 " + info.learn;
+
+      const openBtn = document.getElementById("inspOpenBtn");
+      if (info.noUrl) {
+        openBtn.classList.add("hidden");
+      } else {
+        openBtn.classList.remove("hidden");
+        const configuredUrl = (urls[key] || "").trim();
+        openBtn.textContent = configuredUrl ? `🔗 開啟服務 (${configuredUrl})` : `⚙️ 設定並開啟 ${info.name} 網址`;
+      }
+
+      const panel = document.getElementById("nodeInspector");
+      panel.classList.remove("hidden");
+      panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function closeInspector() {
+      document.getElementById("nodeInspector").classList.add("hidden");
+    }
+
+    function openSelectedService() {
+      if (!selectedKey) return;
+      const info = catalog[selectedKey];
+      const current = (urls[selectedKey] || "").trim();
+      if (!current) {
+        const entered = prompt(`請設定「${info.name}」的完整網址 (http:// 或 https://)：`, "https://");
+        if (!entered) return;
+        try {
+          const parsed = new URL(entered.trim());
+          if (!["http:", "https:"].includes(parsed.protocol)) throw new Error();
+          urls[selectedKey] = entered.trim();
+          try { localStorage.setItem("labTopologyUrls", JSON.stringify(urls)); } catch (e) {}
+          buildUrlEditorFields();
+          inspectNode(selectedKey);
+          window.open(urls[selectedKey], "_blank", "noopener,noreferrer");
+        } catch (e) {
+          alert("網址格式不正確，請以 http:// 或 https:// 開頭。");
+        }
+        return;
+      }
+      window.open(current, "_blank", "noopener,noreferrer");
+    }
+
+    // Batch URL Editor
+    function toggleUrlEditor() {
+      const panel = document.getElementById("urlEditorPanel");
+      panel.classList.toggle("hidden");
+    }
+
+    function buildUrlEditorFields() {
+      const grid = document.getElementById("urlFieldsGrid");
+      grid.innerHTML = "";
+      Object.keys(defaults).forEach(key => {
+        const labelText = catalog[key] ? catalog[key].name : key;
+        const wrap = document.createElement("div");
+        wrap.className = "space-y-1";
+        wrap.innerHTML = `
+          <label for="url-in-${key}" class="block text-xs font-semibold text-[var(--foreground)] truncate">${labelText}</label>
+          <input id="url-in-${key}" type="url" value="${(urls[key] || "").replace(/"/g, "&quot;")}" placeholder="https://... (可留白)"
+            class="w-full px-2.5 py-1.5 rounded-lg text-xs border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] focus:outline-none focus:border-blue-500">
+        `;
+        grid.appendChild(wrap);
+      });
+    }
+
+    function saveAllUrls() {
+      const updated = {};
+      for (const key of Object.keys(defaults)) {
+        const el = document.getElementById("url-in-" + key);
+        const val = el ? el.value.trim() : "";
+        if (val) {
+          try {
+            const u = new URL(val);
+            if (!["http:", "https:"].includes(u.protocol)) throw new Error();
+          } catch (e) {
+            alert((catalog[key]?.name || key) + " 的網址格式不正確（需包含 http:// 或 https://）。");
+            return;
+          }
+        }
+        updated[key] = val;
+      }
+      urls = updated;
+      try { localStorage.setItem("labTopologyUrls", JSON.stringify(urls)); } catch (e) {}
+      if (selectedKey) inspectNode(selectedKey);
+      toggleUrlEditor();
+    }
+
+    function resetAllUrls() {
+      if (!confirm("確定要將所有網址恢復為預設值嗎？")) return;
+      urls = { ...defaults };
+      try { localStorage.removeItem("labTopologyUrls"); } catch (e) {}
+      buildUrlEditorFields();
+      if (selectedKey) inspectNode(selectedKey);
+    }
+
+    // Export self-contained standalone HTML (injects standalone theme tokens for regular browsers)
+    function exportStandaloneHtml() {
+      const clone = document.documentElement.cloneNode(true);
+      const standaloneStyle = document.createElement("style");
+      standaloneStyle.textContent = `
+        :root {
+          --background: #f1f5f9;
+          --card: #ffffff;
+          --foreground: #0f172a;
+          --muted-foreground: #475569;
+          --border: #cbd5e1;
+        }
+        @media (prefers-color-scheme: dark) {
+          :root {
+            --background: #0b1120;
+            --card: #111827;
+            --foreground: #f8fafc;
+            --muted-foreground: #94a3b8;
+            --border: #1e293b;
+          }
+        }
+        body { font-family: "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; }
+      `;
+      clone.querySelector("head").insertBefore(standaloneStyle, clone.querySelector("head").firstChild);
+      const htmlText = "<!DOCTYPE html>\n" + clone.outerHTML;
+      const blob = new Blob([htmlText], { type: "text/html;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "DS_LAB_專業互動架構圖.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    }
+
+    buildUrlEditorFields();
+  </script>
+</body>
+</html>
